@@ -8,18 +8,7 @@ class TempElement(abc.ABC):
         """method to set element"""
 
     def check(self, key, value):
-        if key in self._elements:
-            # same instance like templist to templist, we ignore it
-            if isinstance(self._elements[key], type(value)):
-                return
-
-            if self._options.get("raise_duplicate"):
-                raise ValueError("key is already set")
-
-            if not self._options.get("assign_duplicate"):
-                return
-
-        self._elements[key] = value
+        pass
 
     def __getitem__(self, key):
         if key not in self._elements:
@@ -27,9 +16,7 @@ class TempElement(abc.ABC):
         return self._elements[key]
 
     def conv_value(self, value: Any) -> Any:
-        if isinstance(value, TempElement):
-            value = value.convert()
-        return value
+        pass
 
     @abc.abstractmethod
     def convert(self):
@@ -48,12 +35,7 @@ class TempList(TempElement):
         self.check(key, value)
 
     def convert(self) -> list:
-        keys = sorted(self._elements.keys())
-        # check if index start to 0 and end to number of elements
-        if any((keys[0] != 0, keys[-1] != (len(self._elements) - 1))):
-            raise ValueError("invalid format list keys")
-
-        return [self.conv_value(self._elements[key]) for key in keys]
+        pass
 
 
 class TempDict(TempElement):
@@ -68,6 +50,4 @@ class TempDict(TempElement):
         self.check(key, value)
 
     def convert(self) -> dict:
-        return {
-            key: self.conv_value(value) for key, value in self._elements.items()
-        }
+        pass

@@ -9,7 +9,7 @@ except ImportError:
 
 @cache
 def cache_regex_compile(*ar, **kw):
-    return re.compile(*ar, **kw)
+    pass
 
 
 class InvalidFormat(Exception):
@@ -32,33 +32,10 @@ INVALID_TOKEN_PARSER = ("[", "]", ".")
 
 class NestedParserOptionsAbstract(metaclass=NestedParserOptionsType):
     def check(self, key, keys):
-        if len(keys) == 0:
-            raise InvalidFormat(key)
-
-        first = keys[0]
-        for token in INVALID_TOKEN_PARSER:
-            if token in first:
-                raise InvalidFormat(key)
-
-        for key in keys:
-            if not isinstance(key, str):
-                continue
-            for c in key:
-                if c.isspace():
-                    raise InvalidFormat(key)
+        pass
 
     def split(self, key):
-        contents = [v for v in self._reg_spliter.split(key) if v]
-        if not contents:
-            raise ValueError(f"invalid form key: {key}")
-
-        lst = [contents[0]]
-        if len(contents) >= 2:
-            lst.extend(self._reg_options.split(contents[1]))
-        if len(contents) == 3:
-            lst.append(contents[2])
-
-        return [v for v in lst if v]
+        pass
 
 
 class NestedParserOptionsDot(NestedParserOptionsAbstract):
@@ -67,26 +44,7 @@ class NestedParserOptionsDot(NestedParserOptionsAbstract):
         self._reg_options = cache_regex_compile(r"(\.[^\.]+)")
 
     def sanitize(self, key, value):
-        contents = self.split(key)
-        lst = contents[1:]
-        keys = [contents[0]]
-        for idx, k in enumerate(lst):
-            if k.startswith("."):
-                k = k[1:]
-                if not k:
-                    if len(lst) != idx + 1:
-                        raise InvalidFormat(key)
-                    value = {}
-                    break
-                try:
-                    k = int(k)
-                except Exception:
-                    pass
-            else:
-                raise InvalidFormat(key)
-            keys.append(k)
-
-        return keys, value
+        pass
 
 
 class NestedParserOptionsBracket(NestedParserOptionsAbstract):
@@ -95,27 +53,7 @@ class NestedParserOptionsBracket(NestedParserOptionsAbstract):
         self._reg_options = cache_regex_compile(r"(\[[^\[\]]+\])")
 
     def sanitize(self, key, value):
-        first, *lst = self.split(key)
-        keys = [first]
-
-        for idx, k in enumerate(lst):
-            if k.startswith("[") or k.endswith("]"):
-                if not k.startswith("[") or not k.endswith("]"):
-                    raise InvalidFormat(key)
-                k = k[1:-1]
-                if not k:
-                    if len(lst) != idx + 1:
-                        raise InvalidFormat(key)
-                    value = []
-                    break
-                try:
-                    k = int(k)
-                except Exception:
-                    pass
-            else:
-                raise InvalidFormat(key)
-            keys.append(k)
-        return keys, value
+        pass
 
 
 class NestedParserOptionsMixedDot(NestedParserOptionsAbstract):
@@ -126,33 +64,7 @@ class NestedParserOptionsMixedDot(NestedParserOptionsAbstract):
         self._reg_options = cache_regex_compile(r"(\[\d+\])|(\.[^\[\]\.]+)")
 
     def sanitize(self, key, value):
-        first, *lst = self.split(key)
-        keys = [first]
-
-        for idx, k in enumerate(lst):
-            if k.startswith("."):
-                k = k[1:]
-                # empty dict
-                if not k:
-                    if len(lst) != idx + 1:
-                        raise InvalidFormat(key)
-                    value = {}
-                    break
-            elif k.startswith("[") or k.endswith("]"):
-                if not k.startswith("[") or not k.endswith("]"):
-                    raise InvalidFormat(key)
-                k = k[1:-1]
-                if not k:
-                    if len(lst) != idx + 1:
-                        raise InvalidFormat(key)
-                    value = []
-                    break
-                k = int(k)
-            else:
-                raise InvalidFormat(key)
-            keys.append(k)
-
-        return keys, value
+        pass
 
 
 class NestedParserOptionsMixed(NestedParserOptionsMixedDot):
@@ -163,28 +75,4 @@ class NestedParserOptionsMixed(NestedParserOptionsMixedDot):
         self._reg_options = cache_regex_compile(r"(\[\d+\])|(\.?[^\[\]\.]+)")
 
     def sanitize(self, key, value):
-        first, *lst = self.split(key)
-        keys = [first]
-
-        for idx, k in enumerate(lst):
-            if k.startswith("."):
-                k = k[1:]
-                # empty dict
-                if not k:
-                    if len(lst) != idx + 1:
-                        raise InvalidFormat(key)
-                    value = {}
-                    break
-            elif k.startswith("[") or k.endswith("]"):
-                if not k.startswith("[") or not k.endswith("]"):
-                    raise InvalidFormat(key)
-                k = k[1:-1]
-                if not k:
-                    if len(lst) != idx + 1:
-                        raise InvalidFormat(key)
-                    value = []
-                    break
-                k = int(k)
-            keys.append(k)
-
-        return keys, value
+        pass
